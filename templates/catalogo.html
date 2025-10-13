@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Preços - TV (TESTE)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #000;
+            color: white;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        #videoPlayer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: 1;
+            display: none;
+        }
+
+        #catalogoDisplay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+            display: flex;
+            flex-direction: column;
+            z-index: 2;
+        }
+
+        .catalogo-header {
+            background: linear-gradient(135deg, #e94560 0%, #c72c41 100%);
+            padding: 40px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .catalogo-header h1 {
+            font-size: 4em;
+            margin-bottom: 10px;
+        }
+
+        .produtos-container {
+            flex: 1;
+            padding: 40px;
+            overflow-y: auto;
+        }
+
+        .produto-card {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .produto-nome {
+            font-size: 3em;
+            font-weight: bold;
+        }
+
+        .produto-preco {
+            background: #e94560;
+            font-size: 3.5em;
+            font-weight: bold;
+            padding: 20px 40px;
+            border-radius: 10px;
+        }
+
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: #0f0;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 14px;
+            z-index: 1000;
+            max-width: 400px;
+        }
+
+        .status-ok { color: #0f0; }
+        .status-error { color: #f00; }
+    </style>
+</head>
+<body>
+    <!-- Vídeo -->
+    <video id="videoPlayer" muted>
+        <source src="/static/video/fazenda.mp4" type="video/mp4">
+    </video>
+
+    <!-- Catálogo -->
+    <div id="catalogoDisplay">
+        <div class="catalogo-header">
+            <h1>🥩 TABELA DE PREÇOS</h1>
+        </div>
+        <div class="produtos-container" id="produtosLista">
+            <div style="text-align: center; font-size: 2em; margin-top: 50px;">
+                ⏳ Carregando produtos...
+            </div>
+        </div>
+    </div>
+
+    <!-- Informações de Debug -->
+    <div class="debug-info" id="debugInfo">
+        <strong>🔍 INFORMAÇÕES DE DEBUG:</strong><br>
+        Status: <span id="status">Iniciando...</span><br>
+        Modo atual: <span id="modoAtual">-</span><br>
+        Produtos carregados: <span id="produtosCount">0</span><br>
+        Erros: <span id="erros">Nenhum</span>
+    </div>
+
+    <script>
+        // Configurações
+        const VIDEO_DURATION_SECONDS = 15;
+        const CATALOG_DURATION_SECONDS = 30;
+
+        // Elementos
+        const videoPlayer = document.getElementById('videoPlayer');
+        const catalogoDisplay = document.getElementById('catalogoDisplay');
+        const produtosLista = document.getElementById('produtosLista');
+        
+        // Debug
+        const debugStatus = document.getElementById('status');
+        const debugModo = document.getElementById('modoAtual');
+        const debugCount = document.getElementById('produtosCount');
+        const debugErros = document.getElementById('erros');
+
+        // Atualizar debug
+        function updateDebug(status, modo, count, erro = null) {
+            debugStatus.textContent = status;
+            debugStatus.className = erro ? 'status-error' : 'status-ok';
+            debugModo.textContent = modo;
+            debugCount.textContent = count;
+            if (erro) {
+                debugErros.textContent = erro;
+                debugErros.className = 'status-error';
+            }
+        }
+
+        // Buscar produtos
+        async function atualizarProdutos() {
+            updateDebug('Buscando produtos...', 'Catálogo', '0');
+            
+            try {
+                console.log('Fazendo requisição para /api/produtos');
+                const response = await fetch('/api/produtos');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const produtos = await response.json();
+                console.log('Produtos recebidos:', produtos);
+                
+                updateDebug('Produtos carregados!', 'Catálogo', produtos.length);
+                
+                // Limpar e renderizar
+                produtosLista.innerHTML = '';
+                
+                if (produtos.length === 0) {
+                    produtosLista.innerHTML = '<div style="text-align: center; font-size: 2em; margin-top: 50px;">⚠️ Nenhum produto cadastrado</div>';
+                    return;
+                }
+                
+                produtos.forEach(produto => {
+                    const card = document.createElement('div');
+                    card.className = 'produto-card';
+                    card.innerHTML = `
+                        <div>
+                            <div class="produto-nome">${produto.nome}</div>
+                            <div style="font-size: 1.5em; color: #aaa;">${produto.unidade}</div>
+                        </div>
+                        <div class="produto-preco">
+                            R$ ${produto.preco.toFixed(2).replace('.', ',')}
+                        </div>
+                    `;
+                    produtosLista.appendChild(card);
+                });
+                
+            } catch (error) {
+                console.error('Erro ao buscar produtos:', error);
+                updateDebug('ERRO!', 'Catálogo', '0', error.message);
+                produtosLista.innerHTML = `
+                    <div style="text-align: center; font-size: 2em; margin-top: 50px; color: #f00;">
+                        ❌ Erro ao carregar produtos<br>
+                        <div style="font-size: 0.6em; margin-top: 20px;">${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+
+        // Mostrar vídeo
+        function mostrarVideo() {
+            console.log('Mostrando vídeo...');
+            updateDebug('Reproduzindo vídeo', 'Vídeo', '-');
+            
+            catalogoDisplay.style.display = 'none';
+            videoPlayer.style.display = 'block';
+            videoPlayer.currentTime = 0;
+            
+            videoPlayer.play().catch(err => {
+                console.error('Erro ao tocar vídeo:', err);
+                updateDebug('Erro no vídeo', 'Vídeo', '-', err.message);
+                // Se o vídeo falhar, pula direto pro catálogo
+                setTimeout(mostrarCatalogo, 2000);
+            });
+            
+            setTimeout(mostrarCatalogo, VIDEO_DURATION_SECONDS * 1000);
+        }
+
+        // Mostrar catálogo
+        function mostrarCatalogo() {
+            console.log('Mostrando catálogo...');
+            updateDebug('Preparando catálogo', 'Catálogo', '-');
+            
+            videoPlayer.pause();
+            videoPlayer.style.display = 'none';
+            catalogoDisplay.style.display = 'flex';
+            
+            atualizarProdutos();
+            
+            setTimeout(mostrarVideo, CATALOG_DURATION_SECONDS * 1000);
+        }
+
+        // Inicializar
+        window.addEventListener('load', () => {
+            console.log('=== SISTEMA INICIADO ===');
+            console.log('Configuração:', {
+                videoDuration: VIDEO_DURATION_SECONDS,
+                catalogDuration: CATALOG_DURATION_SECONDS
+            });
+            
+            updateDebug('Sistema iniciado', 'Preparando...', '0');
+            
+            // Testar se o vídeo existe
+            videoPlayer.addEventListener('error', (e) => {
+                console.error('Erro no vídeo:', e);
+                updateDebug('Vídeo não encontrado', 'Erro', '0', 'Arquivo fazenda.mp4 não existe ou está corrompido');
+            });
+            
+            videoPlayer.addEventListener('loadeddata', () => {
+                console.log('Vídeo carregado com sucesso!');
+            });
+            
+            // Começar com vídeo
+            setTimeout(() => {
+                mostrarVideo();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

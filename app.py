@@ -126,6 +126,61 @@ def atualizar_preco():
     except Exception as e:
         return jsonify({'erro': str(e)}), 500
 
+@app.route('/api/adicionar_produto', methods=['POST'])
+def adicionar_produto():
+    """Adiciona um novo produto"""
+    try:
+        data = request.get_json()
+        nome = data.get('nome')
+        preco = data.get('preco')
+        unidade = data.get('unidade')
+        
+        # Validação
+        if not nome or not nome.strip():
+            return jsonify({'erro': 'Nome do produto é obrigatório'}), 400
+        
+        if preco is None:
+            return jsonify({'erro': 'Preço é obrigatório'}), 400
+        
+        if not unidade or not unidade.strip():
+            return jsonify({'erro': 'Unidade é obrigatória'}), 400
+        
+        # Converter e validar preço
+        try:
+            preco = float(preco)
+            if preco < 0:
+                return jsonify({'erro': 'Preço não pode ser negativo'}), 400
+        except ValueError:
+            return jsonify({'erro': 'Preço inválido'}), 400
+        
+        # Verificar se produto já existe
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        cursor.execute('SELECT id FROM produtos WHERE LOWER(nome) = LOWER(?)', (nome.strip(),))
+        produto_existente = cursor.fetchone()
+        
+        if produto_existente:
+            conn.close()
+            return jsonify({'erro': 'Produto já existe no catálogo'}), 400
+        
+        # Inserir novo produto
+        cursor.execute(
+            'INSERT INTO produtos (nome, preco, unidade) VALUES (?, ?, ?)',
+            (nome.strip(), preco, unidade.strip())
+        )
+        conn.commit()
+        produto_id = cursor.lastrowid
+        conn.close()
+        
+        return jsonify({
+            'sucesso': True, 
+            'mensagem': 'Produto adicionado com sucesso',
+            'produto_id': produto_id
+        }), 201
+        
+    except Exception as e:
+        return jsonify({'erro': str(e)}), 500
+
 if __name__ == '__main__':
     # Criar pasta static/video se não existir
     os.makedirs('static/video', exist_ok=True)

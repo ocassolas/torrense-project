@@ -135,6 +135,35 @@
             border-color: #6B9E3E;
         }
 
+        /* Select dropdown styling */
+        select {
+            background: white;
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1.05em;
+            color: #1A1A1A;
+            transition: border-color 0.2s;
+            width: 100%;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 45px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #6B9E3E;
+        }
+
+        select option {
+            padding: 10px;
+            font-size: 1em;
+        }
+
         /* Botão Salvar */
         .btn-salvar {
             background: #6B9E3E;
@@ -493,14 +522,21 @@
                 </div>
                 <div class="form-group">
                     <label for="novoProdutoUnidade">Unidade</label>
-                    <select id="novoProdutoUnidade" required>
+                    <select 
+                        id="novoProdutoUnidade" 
+                        required
+                    >
                         <option value="">Selecione a unidade</option>
-                        <option value="kg">Quilograma (kg)</option>
-                        <option value="g">Gramas (g)</option>
-                        <option value="litro">Litro (L)</option>
-                        <option value="ml">Mililitro (ml)</option>
-                        <option value="unidade">Unidade (un)</option>
-                        <option value="pacote">Pacote (pct)</option>
+                        <option value="kg">kg (quilograma)</option>
+                        <option value="g">g (grama)</option>
+                        <option value="L">L (litro)</option>
+                        <option value="ml">ml (mililitro)</option>
+                        <option value="un">un (unidade)</option>
+                        <option value="pct">pct (pacote)</option>
+                        <option value="cx">cx (caixa)</option>
+                        <option value="dz">dz (dúzia)</option>
+                        <option value="m">m (metro)</option>
+                        <option value="cm">cm (centímetro)</option>
                     </select>
                 </div>
                 <div class="form-actions">
@@ -596,7 +632,7 @@
 
             const nome = document.getElementById('novoProdutoNome').value.trim();
             const preco = parseFloat(document.getElementById('novoProdutoPreco').value);
-            const unidade = document.getElementById('novoProdutoUnidade').value.trim();
+            const unidade = document.getElementById('novoProdutoUnidade').value;
 
             if (!nome || isNaN(preco) || preco < 0 || !unidade) {
                 mostrarMensagem('Preencha todos os campos corretamente!', 'erro');

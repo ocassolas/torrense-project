@@ -69,7 +69,7 @@
             padding: 24px;
             margin-bottom: 16px;
             display: grid;
-            grid-template-columns: 1fr 1fr auto;
+            grid-template-columns: auto 1fr 1fr auto;
             gap: 20px;
             align-items: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
@@ -229,6 +229,100 @@
         .icon-plus {
             width: 24px;
             height: 24px;
+        }
+
+        /* Checkbox Customizado */
+        .produto-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .produto-select {
+            display: none;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .checkbox-custom:hover {
+            border-color: #6B9E3E;
+        }
+
+        .produto-select:checked + .checkbox-custom {
+            background: #6B9E3E;
+            border-color: #6B9E3E;
+        }
+
+        .produto-select:checked + .checkbox-custom::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Botão Excluir */
+        .btn-excluir {
+            background: #E53935;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px 32px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+            width: 100%;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .btn-excluir.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .btn-excluir.enabled:hover {
+            background: #C62828;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(229, 57, 53, 0.3);
+        }
+
+        .btn-excluir.enabled:active {
+            transform: translateY(0);
+        }
+
+        .icon-trash {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Container dos botões */
+        .botoes-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .botoes-container .btn-adicionar,
+        .botoes-container .btn-excluir {
+            flex: 1;
+            margin-top: 0;
         }
 
         /* Modal Overlay */
@@ -403,8 +497,24 @@
             }
 
             .produto-item {
-                grid-template-columns: 1fr;
+                grid-template-columns: auto 1fr;
                 gap: 16px;
+                padding: 20px;
+            }
+
+            .produto-checkbox {
+                grid-row: span 2;
+                align-self: center;
+            }
+
+            .btn-salvar {
+                grid-column: 1 / -1;
+                margin-top: 16px;
+                justify-self: stretch;
+            }
+
+            .botoes-container {
+                flex-direction: column;
             }
 
             .btn-adicionar {
@@ -431,6 +541,8 @@
 
             .produto-item {
                 padding: 18px;
+                grid-template-columns: auto 1fr;
+                gap: 12px;
             }
         }
     </style>
@@ -452,6 +564,16 @@
         <div id="produtosLista">
             {% for produto in produtos %}
             <div class="produto-item">
+                <div class="produto-checkbox">
+                    <input 
+                        type="checkbox" 
+                        id="select-{{ produto.id }}" 
+                        class="produto-select"
+                        onchange="verificarSelecoes()"
+                    >
+                    <label for="select-{{ produto.id }}" class="checkbox-custom"></label>
+                </div>
+
                 <div class="produto-col">
                     <div class="produto-label">Produto</div>
                     <div class="produto-nome-display">
@@ -484,13 +606,25 @@
             {% endfor %}
         </div>
 
-        <!-- Botão Adicionar Produto -->
-        <button class="btn-adicionar" onclick="abrirModal()">
-            <svg class="icon-plus" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            </svg>
-            ADICIONAR PRODUTO
-        </button>
+        <!-- Container dos Botões -->
+        <div class="botoes-container">
+            <!-- Botão Adicionar Produto -->
+            <button class="btn-adicionar" onclick="abrirModal()">
+                <svg class="icon-plus" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                ADICIONAR PRODUTO
+            </button>
+
+            <!-- Botão Excluir Produtos -->
+            <button class="btn-excluir" id="btnExcluir" onclick="abrirModalExclusao()">
+                <svg class="icon-trash" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 6H21M8 6V4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4V6M19 6V20C19 21.1046 18.1046 22 17 22H7C5.89543 22 5 21.1046 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M10 11V17M14 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                EXCLUIR SELECIONADOS
+            </button>
+        </div>
     </div>
 
     <!-- Modal Adicionar Produto -->
@@ -552,6 +686,32 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Confirmar Exclusão -->
+    <div class="modal-overlay" id="modalExclusaoOverlay" onclick="fecharModalExclusao(event)">
+        <div class="modal-box" onclick="event.stopPropagation()">
+            <div class="modal-header">
+                <h2>Confirmar Exclusão</h2>
+            </div>
+            <div class="modal-form">
+                <p id="textoConfirmacao" style="text-align: center; color: #666; font-size: 1.1em; margin-bottom: 20px;">
+                    Você tem certeza que deseja excluir os itens selecionados?
+                </p>
+                <div class="form-actions">
+                    <button type="button" class="btn-cancelar" onclick="fecharModalExclusao()">
+                        Cancelar
+                    </button>
+                    <button type="button" class="btn-confirmar" onclick="confirmarExclusao()">
+                        <svg class="icon-trash" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 16px; height: 16px;">
+                            <path d="M3 6H21M8 6V4C8 2.89543 8.89543 2 10 2H14C15.1046 2 16 2.89543 16 4V6M19 6V20C19 21.1046 18.1046 22 17 22H7C5.89543 22 5 21.1046 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            <path d="M10 11V17M14 11V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Excluir
+                    </button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -658,6 +818,91 @@
             } catch (error) {
                 mostrarMensagem('Erro ao conectar com o servidor!', 'erro');
                 console.error('Erro:', error);
+            }
+        }
+
+        // Verificar seleções e habilitar/desabilitar botão de excluir
+        function verificarSelecoes() {
+            const checkboxes = document.querySelectorAll('.produto-select');
+            const btnExcluir = document.getElementById('btnExcluir');
+            const selecionados = Array.from(checkboxes).filter(cb => cb.checked);
+            
+            if (selecionados.length > 0) {
+                btnExcluir.classList.add('enabled');
+            } else {
+                btnExcluir.classList.remove('enabled');
+            }
+        }
+
+        // Abrir modal de exclusão
+        function abrirModalExclusao() {
+            const checkboxes = document.querySelectorAll('.produto-select');
+            const selecionados = Array.from(checkboxes).filter(cb => cb.checked);
+            
+            if (selecionados.length === 0) {
+                return; // Não deve acontecer se o botão estiver corretamente desabilitado
+            }
+            
+            const textoConfirmacao = document.getElementById('textoConfirmacao');
+            const quantidade = selecionados.length;
+            const texto = quantidade === 1 
+                ? 'Você tem certeza que deseja excluir o item selecionado?'
+                : `Você tem certeza que deseja excluir os ${quantidade} itens selecionados?`;
+            
+            textoConfirmacao.textContent = texto;
+            document.getElementById('modalExclusaoOverlay').classList.add('active');
+        }
+
+        // Fechar modal de exclusão
+        function fecharModalExclusao(event) {
+            if (event && event.target !== event.currentTarget) {
+                return;
+            }
+            document.getElementById('modalExclusaoOverlay').classList.remove('active');
+        }
+
+        // Confirmar exclusão
+        async function confirmarExclusao() {
+            const checkboxes = document.querySelectorAll('.produto-select');
+            const selecionados = Array.from(checkboxes).filter(cb => cb.checked);
+            const ids = selecionados.map(cb => cb.id.replace('select-', ''));
+            
+            try {
+                const response = await fetch('/api/excluir_produtos', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ ids: ids })
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Remover os itens da interface
+                    selecionados.forEach(checkbox => {
+                        const produtoItem = checkbox.closest('.produto-item');
+                        produtoItem.remove();
+                    });
+                    
+                    // Fechar modal
+                    fecharModalExclusao();
+                    
+                    // Verificar seleções (vai desabilitar o botão)
+                    verificarSelecoes();
+                    
+                    // Mostrar mensagem de sucesso
+                    const quantidade = ids.length;
+                    const mensagem = quantidade === 1 
+                        ? 'Produto excluído com sucesso!'
+                        : `${quantidade} produtos excluídos com sucesso!`;
+                    mostrarMensagem(mensagem, 'sucesso');
+                } else {
+                    mostrarMensagem(result.error || 'Erro ao excluir produtos', 'erro');
+                }
+            } catch (error) {
+                console.error('Erro:', error);
+                mostrarMensagem('Erro de conexão', 'erro');
             }
         }
 

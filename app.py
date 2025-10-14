@@ -181,6 +181,53 @@ def adicionar_produto():
     except Exception as e:
         return jsonify({'erro': str(e)}), 500
 
+@app.route('/api/excluir_produtos', methods=['POST'])
+def excluir_produtos():
+    """Exclui múltiplos produtos do banco de dados"""
+    try:
+        data = request.get_json()
+        
+        if not data or 'ids' not in data:
+            return jsonify({'error': 'IDs dos produtos não fornecidos'}), 400
+        
+        ids = data['ids']
+        
+        if not isinstance(ids, list) or not ids:
+            return jsonify({'error': 'Lista de IDs inválida ou vazia'}), 400
+        
+        # Validar que todos os IDs são números
+        try:
+            ids = [int(id_produto) for id_produto in ids]
+        except ValueError:
+            return jsonify({'error': 'IDs de produtos inválidos'}), 400
+        
+        conn = get_db_connection()
+        cursor = conn.cursor()
+        
+        # Verificar quantos produtos existem com esses IDs
+        placeholders = ','.join('?' * len(ids))
+        cursor.execute(f'SELECT COUNT(*) FROM produtos WHERE id IN ({placeholders})', ids)
+        produtos_encontrados = cursor.fetchone()[0]
+        
+        if produtos_encontrados == 0:
+            conn.close()
+            return jsonify({'error': 'Nenhum produto encontrado com os IDs fornecidos'}), 404
+        
+        # Excluir os produtos
+        cursor.execute(f'DELETE FROM produtos WHERE id IN ({placeholders})', ids)
+        produtos_excluidos = cursor.rowcount
+        conn.commit()
+        conn.close()
+        
+        return jsonify({
+            'sucesso': True,
+            'mensagem': f'{produtos_excluidos} produto(s) excluído(s) com sucesso',
+            'produtos_excluidos': produtos_excluidos
+        }), 200
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 if __name__ == '__main__':
     # Criar pasta static/video se não existir
     os.makedirs('static/video', exist_ok=True)

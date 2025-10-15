@@ -229,9 +229,6 @@ def excluir_produtos():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    # Criar pasta static/video se não existir
-    os.makedirs('static/video', exist_ok=True)
-    
     # Inicializar banco de dados
     init_db()
     
@@ -244,7 +241,7 @@ if __name__ == '__main__':
     print("  - Catálogo TV:   http://localhost:5000/catalogo")
     print("\nPara acessar de outros dispositivos na rede local,")
     print("substitua 'localhost' pelo IP da máquina servidor.")
-    print("\nLEMBRETE: Coloque o vídeo 'fazenda.mp4' na pasta 'static/video/'")
+    # Observação: referências a vídeos foram removidas; o catálogo roda sem vídeo.
     print("="*60 + "\n")
     
     app.run(host='0.0.0.0', port=5000, debug=False, threaded=False)

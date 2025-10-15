@@ -776,6 +776,16 @@
 
                 if (response.ok) {
                     mostrarMensagem('Preço atualizado com sucesso!', 'sucesso');
+                    // Notificar outras abas/janelas (por exemplo, o catálogo) sobre a mudança de preço
+                    try {
+                        const bc = new BroadcastChannel('precos_channel');
+                        bc.postMessage({ type: 'preco_atualizado', id: id, novo_preco: novoPreco });
+                        bc.close();
+                    } catch (e) {
+                        // Browsers antigos podem não suportar BroadcastChannel, segue sem notificar
+                        console.warn('BroadcastChannel não disponível:', e);
+                    }
+
                     setTimeout(() => location.reload(), 1500);
                 } else {
                     mostrarMensagem(`Erro: ${data.erro}`, 'erro');

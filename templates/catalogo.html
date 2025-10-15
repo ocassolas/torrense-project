@@ -18,18 +18,6 @@
             overflow: hidden;
         }
 
-        /* ===== VÍDEO ===== */
-        #videoPlayer {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            object-fit: cover;
-            z-index: 1;
-            display: none;
-        }
-
         /* ===== CATÁLOGO ===== */
         #catalogoDisplay {
             position: fixed;
@@ -38,7 +26,7 @@
             width: 100vw;
             height: 100vh;
             background: #E5E5E5;
-            display: none;
+            display: flex; /* Mostrar por padrão, sem vídeo */
             flex-direction: column;
             z-index: 2;
         }
@@ -123,12 +111,6 @@
             line-height: 1.2;
         }
 
-        .produto-unidade {
-            font-size: clamp(1.2em, 2.5vw, 2.5em);
-            color: #999;
-            font-weight: 400;
-        }
-
         .produto-preco-box {
             background: #6B9E3E;
             color: white;
@@ -151,6 +133,12 @@
             font-weight: 700;
             line-height: 1;
             white-space: nowrap;
+        }
+
+        .preco-unidade {
+            font-size: 0.5em;
+            font-weight: 400;
+            opacity: 0.9;
         }
 
         /* Loading */
@@ -219,11 +207,6 @@
     </style>
 </head>
 <body>
-    <!-- Vídeo Institucional -->
-    <video id="videoPlayer" muted>
-        <source src="/static/video/fazenda.mp4" type="video/mp4">
-    </video>
-
     <!-- Catálogo de Preços -->
     <div id="catalogoDisplay">
         <div class="catalogo-header">
@@ -246,22 +229,18 @@
     </div>
 
     <script>
-        // ====== CONFIGURAÇÕES ======
-        const VIDEO_DURATION_SECONDS = 15;
-        const CATALOG_DURATION_SECONDS = 30;
-        const SCROLL_SPEED_SECONDS = 20; // Velocidade do scroll (quanto menor, mais rápido)
+    // ====== CONFIGURAÇÕES ======
+    const SCROLL_SPEED_SECONDS = 20; // Velocidade do scroll (quanto menor, mais rápido)
 
-        // ====== ELEMENTOS DOM ======
-        const videoPlayer = document.getElementById('videoPlayer');
-        const catalogoDisplay = document.getElementById('catalogoDisplay');
-        const produtosLista = document.getElementById('produtosLista');
+    // ====== ELEMENTOS DOM ======
+    const catalogoDisplay = document.getElementById('catalogoDisplay');
+    const produtosLista = document.getElementById('produtosLista');
 
-        // Debug (opcional)
-        const debugStatus = document.getElementById('status');
-        const debugModo = document.getElementById('modoAtual');
-        const debugCount = document.getElementById('produtosCount');
+    // Debug (opcional)
+    const debugStatus = document.getElementById('status');
+    const debugCount = document.getElementById('produtosCount');
 
-        // ====== ATUALIZAR PRODUTOS ======
+    // ====== ATUALIZAR PRODUTOS ======
         async function atualizarProdutos() {
             try {
                 console.log('Buscando produtos...');
@@ -297,11 +276,10 @@
                     card.innerHTML = `
                         <div class="produto-info">
                             <div class="produto-nome">${produto.nome}</div>
-                            <div class="produto-unidade">${produto.unidade}</div>
                         </div>
                         <div class="produto-preco-box">
                             <div class="preco-label">Preço</div>
-                            <div class="produto-preco">R$ ${produto.preco.toFixed(2).replace('.', ',')}</div>
+                            <div class="produto-preco">R$ ${produto.preco.toFixed(2).replace('.', ',')}/<span class="preco-unidade">${produto.unidade}</span></div>
                         </div>
                     `;
                     
@@ -327,55 +305,32 @@
             }
         }
 
-        // ====== MOSTRAR VÍDEO ======
-        function mostrarVideo() {
-            console.log('Mostrando vídeo...');
-            if (debugModo) debugModo.textContent = 'Vídeo';
-            
-            catalogoDisplay.style.display = 'none';
-            videoPlayer.style.display = 'block';
-            videoPlayer.currentTime = 0;
-            
-            videoPlayer.play().catch(err => {
-                console.error('Erro ao tocar vídeo:', err);
-                // Se vídeo falhar, pula para catálogo
-                setTimeout(mostrarCatalogo, 2000);
-            });
-            
-            setTimeout(mostrarCatalogo, VIDEO_DURATION_SECONDS * 1000);
-        }
-
-        // ====== MOSTRAR CATÁLOGO ======
-        function mostrarCatalogo() {
-            console.log('Mostrando catálogo...');
-            if (debugModo) debugModo.textContent = 'Catálogo';
-            
-            videoPlayer.pause();
-            videoPlayer.style.display = 'none';
-            catalogoDisplay.style.display = 'flex';
-            
-            atualizarProdutos();
-            
-            setTimeout(mostrarVideo, CATALOG_DURATION_SECONDS * 1000);
-        }
-
         // ====== INICIALIZAÇÃO ======
+        const REFRESH_INTERVAL_MS = 15000; // Atualiza produtos a cada 30s
+
         window.addEventListener('load', () => {
-            console.log('Sistema iniciado!');
-            console.log(`Configuração: Vídeo=${VIDEO_DURATION_SECONDS}s | Catálogo=${CATALOG_DURATION_SECONDS}s`);
-            
-            // Verificar erros do vídeo
-            videoPlayer.addEventListener('error', (e) => {
-                console.error('Erro no vídeo:', e);
-                console.warn('Verifique se fazenda.mp4 está em static/video/');
-            });
-            
-            videoPlayer.addEventListener('loadeddata', () => {
-                console.log('Vídeo carregado com sucesso');
-            });
-            
-            // Iniciar com vídeo
-            setTimeout(mostrarVideo, 1000);
+            console.log('Sistema iniciado! (modo: catálogo)');
+            console.log(`Configuração: Catálogo somente | Atualizar a cada ${REFRESH_INTERVAL_MS/1000}s`);
+
+            // Primeira carga
+            atualizarProdutos();
+
+            // Polling periódica para garantir atualização
+            setInterval(atualizarProdutos, REFRESH_INTERVAL_MS);
+
+            // Ouvir notificações de outras abas sobre atualização de preços
+            try {
+                const bc = new BroadcastChannel('precos_channel');
+                bc.addEventListener('message', (ev) => {
+                    const msg = ev.data;
+                    if (msg && msg.type === 'preco_atualizado') {
+                        console.log('Recebida notificação de preço atualizado', msg);
+                        atualizarProdutos();
+                    }
+                });
+            } catch (e) {
+                console.warn('BroadcastChannel não disponível:', e);
+            }
         });
 
         // ====== TELA CHEIA AUTOMÁTICA (OPCIONAL) ======

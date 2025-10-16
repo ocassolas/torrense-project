@@ -10,6 +10,546 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='styles/gerenciar.css') }}">
 </head>
 <body>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #E5E5E5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #F5F5F5;
+            border-radius: 24px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            color: #1A1A1A;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+
+        .header p {
+            font-size: 1.1em;
+            color: #666;
+            font-weight: 400;
+        }
+
+        /* Info Box */
+        .info-box {
+            background: #B8E6D5;
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 30px;
+            color: #1A1A1A;
+            font-size: 0.95em;
+            line-height: 1.5;
+        }
+
+        .info-box strong {
+            font-weight: 600;
+        }
+
+        /* Product Card */
+        .produto-item {
+            background: white;
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 16px;
+            display: grid;
+            grid-template-columns: auto 1fr 1fr auto;
+            gap: 20px;
+            align-items: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .produto-col {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .produto-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .produto-nome-display {
+            background: #E8E8E8;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1.15em;
+            color: #1A1A1A;
+            font-weight: 500;
+        }
+
+        .produto-unidade {
+            font-size: 0.75em;
+            color: #999;
+            margin-left: 4px;
+        }
+
+        /* Input */
+        input[type="number"] {
+            background: white;
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1.05em;
+            color: #1A1A1A;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #6B9E3E;
+        }
+
+        input[type="text"] {
+            background: white;
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1.05em;
+            color: #1A1A1A;
+            transition: border-color 0.2s;
+            width: 100%;
+        }
+
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #6B9E3E;
+        }
+
+        /* Select dropdown styling */
+        select {
+            background: white;
+            border: 1.5px solid #E0E0E0;
+            border-radius: 10px;
+            padding: 14px 18px;
+            font-size: 1.05em;
+            color: #1A1A1A;
+            transition: border-color 0.2s;
+            width: 100%;
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6,9 12,15 18,9'%3e%3c/polyline%3e%3c/svg%3e");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            background-size: 16px;
+            padding-right: 45px;
+        }
+
+        select:focus {
+            outline: none;
+            border-color: #6B9E3E;
+        }
+
+        select option {
+            padding: 10px;
+            font-size: 1em;
+        }
+
+        /* Botão Salvar */
+        .btn-salvar {
+            background: #6B9E3E;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .btn-salvar:hover {
+            background: #5A8533;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(107, 158, 62, 0.3);
+        }
+
+        .btn-salvar:active {
+            transform: translateY(0);
+        }
+
+        /* Ícone Disquete SVG */
+        .icon-save {
+            width: 18px;
+            height: 18px;
+        }
+
+        /* Botão Adicionar Produto */
+        .btn-adicionar {
+            background: #7CB342;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px 32px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 24px;
+            width: 100%;
+        }
+
+        .btn-adicionar:hover {
+            background: #689F38;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(124, 179, 66, 0.3);
+        }
+
+        .btn-adicionar:active {
+            transform: translateY(0);
+        }
+
+        .icon-plus {
+            width: 24px;
+            height: 24px;
+        }
+
+        /* Checkbox Customizado */
+        .produto-checkbox {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .produto-select {
+            display: none;
+        }
+
+        .checkbox-custom {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #E0E0E0;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            background: white;
+        }
+
+        .checkbox-custom:hover {
+            border-color: #6B9E3E;
+        }
+
+        .produto-select:checked + .checkbox-custom {
+            background: #6B9E3E;
+            border-color: #6B9E3E;
+        }
+
+        .produto-select:checked + .checkbox-custom::after {
+            content: '✓';
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* Botão Excluir */
+        .btn-excluir {
+            background: #E53935;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 18px 32px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 16px;
+            width: 100%;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+
+        .btn-excluir.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .btn-excluir.enabled:hover {
+            background: #C62828;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(229, 57, 53, 0.3);
+        }
+
+        .btn-excluir.enabled:active {
+            transform: translateY(0);
+        }
+
+        .icon-trash {
+            width: 20px;
+            height: 20px;
+        }
+
+        /* Container dos botões */
+        .botoes-container {
+            display: flex;
+            gap: 12px;
+            margin-top: 24px;
+        }
+
+        .botoes-container .btn-adicionar,
+        .botoes-container .btn-excluir {
+            flex: 1;
+            margin-top: 0;
+        }
+
+        /* Modal Overlay */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.2s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Modal Box */
+        .modal-box {
+            background: white;
+            border-radius: 20px;
+            padding: 36px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .modal-header h2 {
+            font-size: 1.8em;
+            color: #1A1A1A;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .modal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .form-group label {
+            font-size: 0.95em;
+            color: #666;
+            font-weight: 500;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .btn-cancelar {
+            background: #E0E0E0;
+            color: #666;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+        }
+
+        .btn-cancelar:hover {
+            background: #D0D0D0;
+        }
+
+        .btn-confirmar {
+            background: #6B9E3E;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 28px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-confirmar:hover {
+            background: #5A8533;
+            transform: translateY(-1px);
+        }
+
+        /* Mensagem de Feedback */
+        .mensagem {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            left: 20px;
+            max-width: 400px;
+            margin: 0 auto;
+            padding: 16px 24px;
+            border-radius: 12px;
+            font-weight: 600;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            z-index: 2000;
+            animation: slideInDown 0.3s ease;
+            font-size: 0.95em;
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .mensagem.sucesso {
+            background: #6B9E3E;
+            color: white;
+        }
+
+        .mensagem.erro {
+            background: #E53935;
+            color: white;
+        }
+
+        /* Responsivo */
+        @media (max-width: 768px) {
+            .container {
+                padding: 24px;
+                border-radius: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.8em;
+            }
+
+            .produto-item {
+                grid-template-columns: auto 1fr;
+                gap: 16px;
+                padding: 20px;
+            }
+
+            .produto-checkbox {
+                grid-row: span 2;
+                align-self: center;
+            }
+
+            .btn-salvar {
+                grid-column: 1 / -1;
+                margin-top: 16px;
+                justify-self: stretch;
+            }
+
+            .botoes-container {
+                flex-direction: column;
+            }
+
+            .btn-adicionar {
+                font-size: 1em;
+            }
+
+            .modal-box {
+                padding: 28px;
+            }
+
+            .mensagem {
+                right: auto;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .container {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 1.5em;
+            }
+
+            .produto-item {
+                padding: 18px;
+                grid-template-columns: auto 1fr;
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/gerenciar.css') }}">
+</head>
+<body>
     <div class="container">
         <!-- Header -->
         <div class="header">

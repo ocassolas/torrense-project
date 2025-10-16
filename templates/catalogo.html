@@ -3,347 +3,167 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Catálogo de Preços - TV</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: #E5E5E5;
-            color: #1A1A1A;
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            overflow: hidden;
-        }
-
-        /* ===== CATÁLOGO ===== */
-        #catalogoDisplay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: #E5E5E5;
-            display: flex; /* Mostrar por padrão, sem vídeo */
-            flex-direction: column;
-            z-index: 2;
-        }
-
-        /* Header */
-        .catalogo-header {
-            background: #F5F5F5;
-            padding: clamp(30px, 5vh, 60px) clamp(30px, 5vw, 80px);
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-            flex-shrink: 0;
-        }
-
-        .catalogo-header h1 {
-            font-size: clamp(3em, 8vw, 6em);
-            font-weight: 700;
-            color: #1A1A1A;
-            margin-bottom: clamp(10px, 2vh, 20px);
-            letter-spacing: -1px;
-        }
-
-        .catalogo-header p {
-            font-size: clamp(1.5em, 3vw, 2.5em);
-            color: #666;
-            font-weight: 400;
-        }
-
-        /* Container de Produtos */
-        .produtos-scroll-container {
-            flex: 1;
-            overflow: hidden;
-            position: relative;
-            padding: clamp(30px, 5vh, 60px) clamp(30px, 5vw, 80px);
-        }
-
-        .produtos-lista {
-            display: flex;
-            flex-direction: column;
-            gap: clamp(20px, 3vh, 40px);
-            animation: scrollUp 20s linear infinite;
-        }
-
-        /* Animação de scroll suave e contínuo */
-        @keyframes scrollUp {
-            0% {
-                transform: translateY(0);
-            }
-            100% {
-                transform: translateY(-50%);
-            }
-        }
-
-        /* Pausa a animação ao passar o mouse (para debug/apresentação) */
-        .produtos-scroll-container:hover .produtos-lista {
-            animation-play-state: paused;
-        }
-
-        /* Card do Produto */
-        .produto-card {
-            background: white;
-            border-radius: clamp(12px, 2vw, 20px);
-            padding: clamp(25px, 4vh, 50px) clamp(30px, 5vw, 60px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            gap: clamp(20px, 3vw, 40px);
-            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
-            min-height: clamp(100px, 15vh, 180px);
-        }
-
-        .produto-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            gap: clamp(8px, 1.5vh, 15px);
-        }
-
-        .produto-nome {
-            font-size: clamp(2em, 5vw, 4.5em);
-            font-weight: 600;
-            color: #1A1A1A;
-            line-height: 1.2;
-        }
-
-        .produto-preco-box {
-            background: #6B9E3E;
-            color: white;
-            padding: clamp(20px, 3vh, 40px) clamp(30px, 4vw, 60px);
-            border-radius: clamp(12px, 2vw, 16px);
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(107, 158, 62, 0.25);
-            min-width: clamp(150px, 20vw, 300px);
-        }
-
-        .preco-label {
-            font-size: clamp(1em, 2vw, 1.8em);
-            opacity: 0.9;
-            margin-bottom: clamp(5px, 1vh, 10px);
-            font-weight: 400;
-        }
-
-        .produto-preco {
-            font-size: clamp(2.5em, 5vw, 5em);
-            font-weight: 700;
-            line-height: 1;
-            white-space: nowrap;
-        }
-
-        .preco-unidade {
-            font-size: 0.5em;
-            font-weight: 400;
-            opacity: 0.9;
-        }
-
-        /* Loading */
-        .loading {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            font-size: clamp(2em, 4vw, 3em);
-            color: #666;
-        }
-
-        /* Animação de entrada */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .produto-card {
-            animation: fadeIn 0.6s ease forwards;
-        }
-
-        /* Delays para entrada escalonada */
-        .produto-card:nth-child(1) { animation-delay: 0.1s; }
-        .produto-card:nth-child(2) { animation-delay: 0.2s; }
-        .produto-card:nth-child(3) { animation-delay: 0.3s; }
-        .produto-card:nth-child(4) { animation-delay: 0.4s; }
-        .produto-card:nth-child(5) { animation-delay: 0.5s; }
-        .produto-card:nth-child(6) { animation-delay: 0.6s; }
-        .produto-card:nth-child(7) { animation-delay: 0.7s; }
-        .produto-card:nth-child(8) { animation-delay: 0.8s; }
-
-        /* Responsivo */
-        @media (max-width: 768px) {
-            .produto-card {
-                flex-direction: column;
-                text-align: center;
-                gap: 20px;
-            }
-
-            .produto-preco-box {
-                width: 100%;
-            }
-        }
-
-        /* Debug Info (opcional) */
-        .debug-info {
-            position: fixed;
-            bottom: 15px;
-            right: 15px;
-            background: rgba(0, 0, 0, 0.75);
-            color: #0f0;
-            padding: 10px 15px;
-            border-radius: 8px;
-            font-family: monospace;
-            font-size: 12px;
-            z-index: 1000;
-            display: none; /* Mude para 'block' se quiser ver */
-        }
-    </style>
+    <title>Catálogo - Mercado Torrense</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles/catalogo.css') }}">
 </head>
 <body>
-    <!-- Catálogo de Preços -->
-    <div id="catalogoDisplay">
-        <div class="catalogo-header">
-            <h1>MERCADO TORRENSE</h1>
-            <p>Confira nossos preços</p>
-        </div>
-        
-        <div class="produtos-scroll-container">
-            <div class="produtos-lista" id="produtosLista">
-                <div class="loading">Carregando produtos...</div>
+    <!-- Header Fixo -->
+    <header class="header">
+        <div class="logo-container">
+            <div class="logo">
+                <!-- Logo Gassen -->
+                <img src="{{ url_for('static', filename='img/logo.jpg') }}" alt="Logo GASSEN">
             </div>
         </div>
-    </div>
+        <h1 class="header-title">MERCADO TORRENSE</h1>
+    </header>
 
-    <!-- Debug Info (opcional) -->
-    <div class="debug-info" id="debugInfo">
-        Status: <span id="status">Iniciando...</span><br>
-        Modo: <span id="modoAtual">-</span><br>
-        Produtos: <span id="produtosCount">0</span>
-    </div>
+    <!-- Container de Produtos -->
+    <main class="produtos-container">
+        <div class="produtos-lista" id="produtosLista">
+            <div class="loading">Carregando produtos...</div>
+        </div>
+    </main>
 
     <script>
-    // ====== CONFIGURAÇÕES ======
-    const SCROLL_SPEED_SECONDS = 20; // Velocidade do scroll (quanto menor, mais rápido)
+        // ====== CONFIGURAÇÕES ======
+        const API_ENDPOINT = '/api/produtos';
+        const REFRESH_INTERVAL_MS = 30000; // Atualiza a cada 30 segundos
 
-    // ====== ELEMENTOS DOM ======
-    const catalogoDisplay = document.getElementById('catalogoDisplay');
-    const produtosLista = document.getElementById('produtosLista');
+        // ====== ELEMENTOS DOM ======
+        const produtosLista = document.getElementById('produtosLista');
 
-    // Debug (opcional)
-    const debugStatus = document.getElementById('status');
-    const debugCount = document.getElementById('produtosCount');
+        // ====== FUNÇÕES ======
+        
+        /**
+         * Formata o preço no padrão brasileiro
+         */
+        function formatarPreco(preco) {
+            return preco.toFixed(2).replace('.', ',');
+        }
 
-    // ====== ATUALIZAR PRODUTOS ======
+        /**
+         * Cria o HTML de um item de produto
+         */
+        function criarProdutoHTML(produto) {
+            return `
+                <div class="produto-item">
+                    <div class="produto-nome">${produto.nome}</div>
+                    <div class="produto-preco-container">
+                        <span class="produto-preco">${formatarPreco(produto.preco)}</span>
+                        <span class="preco-unidade">${produto.unidade || 'kg'}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        /**
+         * Atualiza a lista de produtos
+         */
         async function atualizarProdutos() {
             try {
-                console.log('Buscando produtos...');
-                const response = await fetch('/api/produtos');
+                console.log('📦 Buscando produtos...');
+                const response = await fetch(API_ENDPOINT);
                 
                 if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}`);
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
                 }
                 
                 const produtos = await response.json();
-                console.log('Produtos recebidos:', produtos.length);
-                
-                // Atualizar debug
-                if (debugStatus) debugStatus.textContent = 'Produtos carregados';
-                if (debugCount) debugCount.textContent = produtos.length;
+                console.log(`✅ ${produtos.length} produtos carregados`);
                 
                 // Limpar lista
                 produtosLista.innerHTML = '';
                 
+                // Verificar se há produtos
                 if (produtos.length === 0) {
-                    produtosLista.innerHTML = '<div class="loading">Nenhum produto cadastrado</div>';
+                    produtosLista.innerHTML = '<div class="empty-state">Nenhum produto cadastrado</div>';
                     return;
                 }
                 
-                // Duplicar lista para scroll infinito
-                const produtosDuplicados = [...produtos, ...produtos];
-                
                 // Renderizar produtos
-                produtosDuplicados.forEach((produto, index) => {
-                    const card = document.createElement('div');
-                    card.className = 'produto-card';
-                    
-                    card.innerHTML = `
-                        <div class="produto-info">
-                            <div class="produto-nome">${produto.nome}</div>
-                        </div>
-                        <div class="produto-preco-box">
-                            <div class="preco-label">Preço</div>
-                            <div class="produto-preco">R$ ${produto.preco.toFixed(2).replace('.', ',')}/<span class="preco-unidade">${produto.unidade}</span></div>
-                        </div>
-                    `;
-                    
-                    produtosLista.appendChild(card);
+                produtos.forEach(produto => {
+                    produtosLista.innerHTML += criarProdutoHTML(produto);
                 });
                 
-                // Ajustar velocidade do scroll baseado na quantidade de produtos
-                const totalHeight = produtosLista.scrollHeight / 2;
-                const scrollDuration = Math.max(SCROLL_SPEED_SECONDS, produtos.length * 3);
-                produtosLista.style.animation = `scrollUp ${scrollDuration}s linear infinite`;
-                
             } catch (error) {
-                console.error('Erro ao buscar produtos:', error);
+                console.error('❌ Erro ao buscar produtos:', error);
                 produtosLista.innerHTML = `
-                    <div class="loading" style="color: #E53935;">
-                        Erro ao carregar produtos
+                    <div class="empty-state" style="color: #E53935;">
+                        Erro ao carregar produtos<br>
+                        <small style="font-size: 14px; margin-top: 10px; display: block;">${error.message}</small>
                     </div>
                 `;
-                if (debugStatus) {
-                    debugStatus.textContent = 'ERRO';
-                    debugStatus.style.color = '#f00';
-                }
             }
         }
 
+        /**
+         * Simula produtos para teste (remover em produção)
+         */
+        function carregarProdutosTeste() {
+            const produtosTeste = [
+                { nome: 'PRODUTO 1', preco: 99.99, unidade: 'kg' },
+                { nome: 'PRODUTO 2', preco: 45.50, unidade: 'kg' },
+                { nome: 'PRODUTO 3', preco: 120.00, unidade: 'kg' },
+                { nome: 'PRODUTO 4', preco: 78.90, unidade: 'kg' },
+                { nome: 'PRODUTO 5', preco: 33.25, unidade: 'kg' },
+            ];
+
+            produtosLista.innerHTML = '';
+            produtosTeste.forEach(produto => {
+                produtosLista.innerHTML += criarProdutoHTML(produto);
+            });
+            console.log('🧪 Produtos de teste carregados');
+        }
+
         // ====== INICIALIZAÇÃO ======
-        const REFRESH_INTERVAL_MS = 15000; // Atualiza produtos a cada 30s
-
         window.addEventListener('load', () => {
-            console.log('Sistema iniciado! (modo: catálogo)');
-            console.log(`Configuração: Catálogo somente | Atualizar a cada ${REFRESH_INTERVAL_MS/1000}s`);
-
-            // Primeira carga
+            console.log('🚀 Sistema de catálogo iniciado');
+            
+            // Tentar carregar produtos da API
             atualizarProdutos();
-
-            // Polling periódica para garantir atualização
+            
+            // Atualização periódica
             setInterval(atualizarProdutos, REFRESH_INTERVAL_MS);
-
-            // Ouvir notificações de outras abas sobre atualização de preços
+            
+            // Listener para atualizações via BroadcastChannel (comunicação entre abas)
             try {
                 const bc = new BroadcastChannel('precos_channel');
-                bc.addEventListener('message', (ev) => {
-                    const msg = ev.data;
-                    if (msg && msg.type === 'preco_atualizado') {
-                        console.log('Recebida notificação de preço atualizado', msg);
+                bc.addEventListener('message', (event) => {
+                    if (event.data && event.data.type === 'preco_atualizado') {
+                        console.log('📢 Atualização recebida via BroadcastChannel');
                         atualizarProdutos();
                     }
                 });
             } catch (e) {
-                console.warn('BroadcastChannel não disponível:', e);
+                console.warn('⚠️ BroadcastChannel não disponível:', e);
             }
+
+            // DESCOMENTAR LINHA ABAIXO PARA TESTAR SEM API:
+            // carregarProdutosTeste();
         });
 
-        // ====== TELA CHEIA AUTOMÁTICA (OPCIONAL) ======
-        // Descomente para ativar tela cheia ao clicar na página
-        /*
-        document.addEventListener('click', () => {
-            if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    console.log('Erro ao entrar em tela cheia:', err);
-                });
+        // ====== ATALHOS DE TECLADO (OPCIONAL) ======
+        document.addEventListener('keydown', (e) => {
+            // F5 ou Ctrl+R: Atualizar produtos
+            if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
+                e.preventDefault();
+                atualizarProdutos();
             }
-        }, { once: true });
-        */
+            
+            // F11: Toggle fullscreen
+            if (e.key === 'F11') {
+                e.preventDefault();
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
     </script>
 </body>
 </html>

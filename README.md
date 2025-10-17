@@ -4,35 +4,23 @@ Um sistema web simples e eficiente para gerenciar e exibir preços de produtos e
 
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 ![Flask](https://img.shields.io/badge/flask-latest-lightblue)
+![HTML5](https://img.shields.io/badge/html5-%23E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/css3-%231572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/javascript-%23F7DF1E?logo=javascript&logoColor=black)
 ![License](https://img.shields.io/badge/license-MIT-green)
 
 ---
 
 ## 📌 O Problema
 
-Padarias e mercados tem a tradição de passar preços em um power-point na TV, através de um pendrive, impossibilitando a gestão e eficiência de tempo na mudança dos produtos.
+Padarias e mercados tem a tradição de passar preços em um Power-Point na TV, através de um pendrive, impossibilitando a gestão e eficiência de tempo na mudança dos produtos.
+
 ## 💡 A Solução
 
 **Mercado Torrense** oferece uma forma simples de:
-- Gerenciar preços via interface web interativa
+- Gerenciar preços via interface web intuitiva
 - Exibir produtos em tempo real em TVs/monitores
 - Atualizar tudo automaticamente sem reescrever nada
-
----
-
-## ✨ O Que Você Consegue Fazer
-
-### 🖥️ Gerenciador de Preços
-- Atualizar preços de qualquer dispositivo (PC, tablet, celular)
-- Adicionar novos produtos com nome, preço e unidade
-- Interface limpa e minimalista - super fácil de usar
-- Alterações aparecem imediatamente no catálogo
-
-### 📺 Catálogo Automático para TV
-- Produtos passam continuamente na tela (scroll automático)
-- Design limpo e legível à distância
-- Sem necessidade de interação - funciona 24/7
-- Adapta-se automaticamente a qualquer tamanho de tela
 
 ---
 
@@ -46,15 +34,14 @@ Padarias e mercados tem a tradição de passar preços em um power-point na TV, 
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/mercado-torrense.git
-cd mercado-torrense
+git clone https://github.com/ocassolas/torrense-project.git
+cd torrense-project
 
 # Instale o Flask
 pip install flask
 
 # Crie as pastas necessárias
 mkdir templates
-mkdir -p static/video
 
 # Inicie o servidor
 python app.py
@@ -71,11 +58,9 @@ Pronto! Acesse:
 ```
 mercado-torrense/
 ├── app.py                    # Backend (servidor)
-├── templates/
-│   ├── gerenciar.html       # Interface de gerenciamento
-│   └── catalogo.html        # Tela para TV
-├── static/video/            # Coloque vídeos aqui (opcional)
-└── precos.db                # Banco de dados (criado automaticamente)
+└── templates/
+   ├── gerenciar.html       # Interface de gerenciamento
+   └── catalogo.html        # Tela para TV
 ```
 
 ---
@@ -98,47 +83,17 @@ mercado-torrense/
 
 ---
 
-## 🎨 Personalizações Simples
-
-No arquivo `catalogo.html`, você pode ajustar:
-
-```javascript
-const VIDEO_DURATION_SECONDS = 15;      // Tempo do vídeo
-const CATALOG_DURATION_SECONDS = 30;    // Tempo do catálogo
-const SCROLL_SPEED_SECONDS = 20;        // Velocidade do scroll
-```
-
----
-
-## 📱 Compatibilidade
-
-Funciona perfeitamente em:
-- ✅ PC/Desktop
-- ✅ Tablets
-- ✅ Celulares
-- ✅ TVs (via navegador)
-- ✅ Qualquer dispositivo com navegador web
-
----
-
 ## 🔧 Tecnologias
 
 - **Backend**: Python + Flask
 - **Frontend**: HTML + CSS + JavaScript
-- **Banco**: SQLite (zero configuração)
 
 ---
 
-## 📝 API
+## 👥 Autores
 
-### GET `/api/produtos`
-Retorna todos os produtos
-
-### POST `/api/atualizar_preco`
-Atualiza preço de um produto
-
-### POST `/api/adicionar_produto`
-Adiciona novo produto
+- **z4mbrano** - Melhorias/Contribuições 
+- **ocassolas** - Desenvolvimento
 
 ---
 
@@ -146,13 +101,3 @@ Adiciona novo produto
 
 MIT - Use livremente!
 
----
-
-## 👥 Autores
-
-- **z4mbrano** - Desenvolvimento
-- **ocassolas** - Contribuições
-
----
-
-**Pronto para usar. Sem complicações. Simples assim.** ✨

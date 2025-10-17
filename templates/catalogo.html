@@ -32,6 +32,7 @@
         // ====== CONFIGURAÇÕES ======
         const API_ENDPOINT = '/api/produtos';
         const REFRESH_INTERVAL_MS = 30000; // Atualiza a cada 30 segundos
+        const SCROLL_SPEED_SECONDS = 20; // Velocidade do scroll (quanto menor, mais rápido)
 
         // ====== ELEMENTOS DOM ======
         const produtosLista = document.getElementById('produtosLista');
@@ -61,7 +62,7 @@
         }
 
         /**
-         * Atualiza a lista de produtos
+         * Atualiza a lista de produtos com scroll automático
          */
         async function atualizarProdutos() {
             try {
@@ -84,10 +85,16 @@
                     return;
                 }
                 
-                // Renderizar produtos
-                produtos.forEach(produto => {
+                // Duplicar lista para scroll infinito suave
+                const produtosDuplicados = [...produtos, ...produtos];
+                
+                // Renderizar produtos duplicados
+                produtosDuplicados.forEach(produto => {
                     produtosLista.innerHTML += criarProdutoHTML(produto);
                 });
+                
+                // Configurar scroll automático
+                configurarScrollAutomatico(produtos.length);
                 
             } catch (error) {
                 console.error('❌ Erro ao buscar produtos:', error);
@@ -101,22 +108,44 @@
         }
 
         /**
+         * Configura o scroll automático infinito
+         */
+        function configurarScrollAutomatico(quantidadeProdutos) {
+            // Calcular duração do scroll baseado na quantidade de produtos
+            const scrollDuration = Math.max(SCROLL_SPEED_SECONDS, quantidadeProdutos * 3);
+            
+            // Aplicar animação CSS
+            produtosLista.style.animation = `scrollUp ${scrollDuration}s linear infinite`;
+            
+            console.log(`🔄 Scroll automático ativado: ${scrollDuration}s por ciclo`);
+        }
+
+        /**
          * Simula produtos para teste (remover em produção)
          */
         function carregarProdutosTeste() {
             const produtosTeste = [
-                { nome: 'PRODUTO 1', preco: 99.99, unidade: 'kg' },
-                { nome: 'PRODUTO 2', preco: 45.50, unidade: 'kg' },
-                { nome: 'PRODUTO 3', preco: 120.00, unidade: 'kg' },
-                { nome: 'PRODUTO 4', preco: 78.90, unidade: 'kg' },
-                { nome: 'PRODUTO 5', preco: 33.25, unidade: 'kg' },
+                { nome: 'PICANHA', preco: 89.90, unidade: 'kg' },
+                { nome: 'COSTELA', preco: 45.50, unidade: 'kg' },
+                { nome: 'FILÉ MIGNON', preco: 99.90, unidade: 'kg' },
+                { nome: 'ALCATRA', preco: 54.90, unidade: 'kg' },
+                { nome: 'FRALDINHA', preco: 49.90, unidade: 'kg' },
+                { nome: 'CONTRAFILÉ', preco: 59.90, unidade: 'kg' },
+                { nome: 'MAMINHA', preco: 44.90, unidade: 'kg' },
             ];
 
+            // Duplicar para scroll infinito
+            const produtosDuplicados = [...produtosTeste, ...produtosTeste];
+
             produtosLista.innerHTML = '';
-            produtosTeste.forEach(produto => {
+            produtosDuplicados.forEach(produto => {
                 produtosLista.innerHTML += criarProdutoHTML(produto);
             });
-            console.log('🧪 Produtos de teste carregados');
+            
+            // Configurar scroll
+            configurarScrollAutomatico(produtosTeste.length);
+            
+            console.log('🧪 Produtos de teste carregados com scroll automático');
         }
 
         // ====== INICIALIZAÇÃO ======

@@ -76,12 +76,31 @@ body {
     max-width: 90vw;
     margin-left: auto;
     margin-right: auto;
+    overflow: hidden;
+    position: relative;
+    height: calc(100vh - 12vh);
 }
 
 .produtos-lista {
     display: flex;
     flex-direction: column;
     gap: 0;
+    animation: scrollUp 20s linear infinite;
+}
+
+/* Animação de scroll automático infinito */
+@keyframes scrollUp {
+    0% {
+        transform: translateY(0);
+    }
+    100% {
+        transform: translateY(-50%);
+    }
+}
+
+/* Pausa a animação ao passar o mouse (útil para debug) */
+.produtos-container:hover .produtos-lista {
+    animation-play-state: paused;
 }
 
 /* ===== CARD DO PRODUTO ===== */

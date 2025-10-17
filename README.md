@@ -10,12 +10,11 @@ Um sistema web simples e eficiente para gerenciar e exibir preços de produtos e
 
 ## 📌 O Problema
 
-Mercados e açougues precisam atualizar preços constantemente. A solução tradicional? Reescrever preços em placas manualmente. Demorado, propenso a erros e improfissional.
-
+Padarias e mercados tem a tradição de passar preços em um power-point na TV, através de um pendrive, impossibilitando a gestão e eficiência de tempo na mudança dos produtos.
 ## 💡 A Solução
 
 **Mercado Torrense** oferece uma forma simples de:
-- Gerenciar preços via interface web intuitiva
+- Gerenciar preços via interface web interativa
 - Exibir produtos em tempo real em TVs/monitores
 - Atualizar tudo automaticamente sem reescrever nada
 

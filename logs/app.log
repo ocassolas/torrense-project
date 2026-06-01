@@ -1,1 +1,29 @@
 Could not find platform independent libraries <prefix>
+
+============================================================
+SISTEMA DE CATÁLOGO MERCADO TORRENSE
+============================================================
+
+Acesse as seguintes URLs:
+  - Gerenciamento: http://localhost:5000/gerenciar
+  - Catálogo TV:   http://localhost:5000/catalogo
+
+Para acessar de outros dispositivos na rede local,
+substitua 'localhost' pelo IP da máquina servidor.
+============================================================
+
+ * Serving Flask app 'app'
+ * Debug mode: off
+WARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://192.168.0.103:5000
+Press CTRL+C to quit
+127.0.0.1 - - [31/May/2026 23:15:41] "GET /api/produtos HTTP/1.1" 200 -
+127.0.0.1 - - [31/May/2026 23:15:41] "GET /gerenciar HTTP/1.1" 200 -
+127.0.0.1 - - [31/May/2026 23:15:41] "GET /static/styles/gerenciar.css HTTP/1.1" 200 -
+127.0.0.1 - - [31/May/2026 23:15:42] "GET /favicon.ico HTTP/1.1" 404 -
+127.0.0.1 - - [31/May/2026 23:15:48] "GET /catalogo HTTP/1.1" 200 -
+127.0.0.1 - - [31/May/2026 23:15:48] "GET /static/styles/catalogo.css HTTP/1.1" 200 -
+127.0.0.1 - - [31/May/2026 23:15:48] "GET /static/img/logo.jpg HTTP/1.1" 200 -
+127.0.0.1 - - [31/May/2026 23:15:48] "GET /api/produtos HTTP/1.1" 200 -

@@ -85,21 +85,23 @@ body {
     display: flex;
     flex-direction: column;
     gap: 0;
+    -webkit-animation: scrollUp 20s linear infinite;
     animation: scrollUp 20s linear infinite;
 }
 
 /* Animação de scroll automático infinito */
+@-webkit-keyframes scrollUp {
+    0%   { -webkit-transform: translateY(0); }
+    100% { -webkit-transform: translateY(-50%); }
+}
 @keyframes scrollUp {
-    0% {
-        transform: translateY(0);
-    }
-    100% {
-        transform: translateY(-50%);
-    }
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(-50%); }
 }
 
 /* Pausa a animação ao passar o mouse (útil para debug) */
 .produtos-container:hover .produtos-lista {
+    -webkit-animation-play-state: paused;
     animation-play-state: paused;
 }
 
@@ -225,32 +227,3 @@ body {
     }
 }
 
-/* ===== ANIMAÇÕES ===== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(2vh);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.produto-item {
-    animation: fadeIn 0.5s ease forwards;
-    opacity: 0;
-}
-
-.produto-item:nth-child(1) { animation-delay: 0.1s; }
-.produto-item:nth-child(2) { animation-delay: 0.15s; }
-.produto-item:nth-child(3) { animation-delay: 0.2s; }
-.produto-item:nth-child(4) { animation-delay: 0.25s; }
-.produto-item:nth-child(5) { animation-delay: 0.3s; }
-.produto-item:nth-child(6) { animation-delay: 0.35s; }
-.produto-item:nth-child(7) { animation-delay: 0.4s; }
-.produto-item:nth-child(8) { animation-delay: 0.45s; }
-.produto-item:nth-child(9) { animation-delay: 0.5s; }
-.produto-item:nth-child(10) { animation-delay: 0.55s; }
-.produto-item:nth-child(9) { animation-delay: 0.5s; }
-.produto-item:nth-child(10) { animation-delay: 0.55s; }

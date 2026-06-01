@@ -4,8 +4,8 @@ import os
 
 app = Flask(__name__)
 
-# Configuração do banco de dados
-DB_NAME = 'precos.db'
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DB_NAME = os.path.join(BASE_DIR, 'precos.db')
 
 def get_db_connection():
     """Cria uma conexão com o banco de dados SQLite"""
@@ -188,18 +188,18 @@ def excluir_produtos():
         data = request.get_json()
         
         if not data or 'ids' not in data:
-            return jsonify({'error': 'IDs dos produtos não fornecidos'}), 400
-        
+            return jsonify({'erro': 'IDs dos produtos não fornecidos'}), 400
+
         ids = data['ids']
-        
+
         if not isinstance(ids, list) or not ids:
-            return jsonify({'error': 'Lista de IDs inválida ou vazia'}), 400
-        
+            return jsonify({'erro': 'Lista de IDs inválida ou vazia'}), 400
+
         # Validar que todos os IDs são números
         try:
             ids = [int(id_produto) for id_produto in ids]
         except ValueError:
-            return jsonify({'error': 'IDs de produtos inválidos'}), 400
+            return jsonify({'erro': 'IDs de produtos inválidos'}), 400
         
         conn = get_db_connection()
         cursor = conn.cursor()
@@ -211,22 +211,22 @@ def excluir_produtos():
         
         if produtos_encontrados == 0:
             conn.close()
-            return jsonify({'error': 'Nenhum produto encontrado com os IDs fornecidos'}), 404
-        
+            return jsonify({'erro': 'Nenhum produto encontrado com os IDs fornecidos'}), 404
+
         # Excluir os produtos
         cursor.execute(f'DELETE FROM produtos WHERE id IN ({placeholders})', ids)
         produtos_excluidos = cursor.rowcount
         conn.commit()
         conn.close()
-        
+
         return jsonify({
             'sucesso': True,
             'mensagem': f'{produtos_excluidos} produto(s) excluído(s) com sucesso',
             'produtos_excluidos': produtos_excluidos
         }), 200
-        
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'erro': str(e)}), 500
 
 if __name__ == '__main__':
     # Inicializar banco de dados
@@ -244,4 +244,4 @@ if __name__ == '__main__':
     # Observação: referências a vídeos foram removidas; o catálogo roda sem vídeo.
     print("="*60 + "\n")
     
-    app.run(host='0.0.0.0', port=5000, debug=False, threaded=False)
+    app.run(host='0.0.0.0', port=5000, debug=False, threaded=True)

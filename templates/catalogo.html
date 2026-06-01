@@ -29,167 +29,96 @@
     </main>
 
     <script>
-        // ====== CONFIGURAÇÕES ======
-        const API_ENDPOINT = '/api/produtos';
-        const REFRESH_INTERVAL_MS = 30000; // Atualiza a cada 30 segundos
-        const SCROLL_SPEED_SECONDS = 20; // Velocidade do scroll (quanto menor, mais rápido)
+        var API_ENDPOINT = '/api/produtos';
+        var REFRESH_INTERVAL_MS = 30000;
+        var SCROLL_SPEED_SECONDS = 20;
 
-        // ====== ELEMENTOS DOM ======
-        const produtosLista = document.getElementById('produtosLista');
+        var produtosLista = document.getElementById('produtosLista');
 
-        // ====== FUNÇÕES ======
-        
-        /**
-         * Formata o preço no padrão brasileiro
-         */
         function formatarPreco(preco) {
             return preco.toFixed(2).replace('.', ',');
         }
 
-        /**
-         * Cria o HTML de um item de produto
-         */
         function criarProdutoHTML(produto) {
-            return `
-                <div class="produto-item">
-                    <div class="produto-nome">${produto.nome}</div>
-                    <div class="produto-preco-container">
-                        <span class="produto-preco">${formatarPreco(produto.preco)}</span>
-                        <span class="preco-unidade">${produto.unidade || 'kg'}</span>
-                    </div>
-                </div>
-            `;
+            return '<div class="produto-item">' +
+                '<div class="produto-nome">' + produto.nome + '</div>' +
+                '<div class="produto-preco-container">' +
+                '<span class="produto-preco">R$ ' + formatarPreco(produto.preco) + '</span>' +
+                '<span class="preco-unidade">/ ' + (produto.unidade || 'kg') + '</span>' +
+                '</div>' +
+                '</div>';
         }
 
-        /**
-         * Atualiza a lista de produtos com scroll automático
-         */
-        async function atualizarProdutos() {
-            try {
-                console.log('📦 Buscando produtos...');
-                const response = await fetch(API_ENDPOINT);
-                
-                if (!response.ok) {
-                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+        function configurarScroll(quantidadeProdutos) {
+            var dur = Math.max(SCROLL_SPEED_SECONDS, quantidadeProdutos * 3);
+            produtosLista.style.WebkitAnimation = 'none';
+            produtosLista.style.animation = 'none';
+            produtosLista.offsetHeight; // força reflow para reiniciar animação
+            produtosLista.style.WebkitAnimation = 'scrollUp ' + dur + 's linear infinite';
+            produtosLista.style.animation = 'scrollUp ' + dur + 's linear infinite';
+        }
+
+        function atualizarProdutos() {
+            var xhr = new XMLHttpRequest();
+            xhr.open('GET', API_ENDPOINT, true);
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState !== 4) return;
+                if (xhr.status === 200) {
+                    try {
+                        var produtos = JSON.parse(xhr.responseText);
+                        produtosLista.innerHTML = '';
+                        if (produtos.length === 0) {
+                            produtosLista.innerHTML = '<div class="empty-state">Nenhum produto cadastrado</div>';
+                            return;
+                        }
+                        var duplicados = produtos.concat(produtos);
+                        var html = '';
+                        for (var i = 0; i < duplicados.length; i++) {
+                            html += criarProdutoHTML(duplicados[i]);
+                        }
+                        produtosLista.innerHTML = html;
+                        configurarScroll(produtos.length);
+                    } catch (e) {
+                        produtosLista.innerHTML = '<div class="empty-state" style="color:#E53935;">Erro ao processar dados</div>';
+                    }
+                } else {
+                    produtosLista.innerHTML = '<div class="empty-state" style="color:#E53935;">Erro ao carregar produtos</div>';
                 }
-                
-                const produtos = await response.json();
-                console.log(`✅ ${produtos.length} produtos carregados`);
-                
-                // Limpar lista
-                produtosLista.innerHTML = '';
-                
-                // Verificar se há produtos
-                if (produtos.length === 0) {
-                    produtosLista.innerHTML = '<div class="empty-state">Nenhum produto cadastrado</div>';
-                    return;
-                }
-                
-                // Duplicar lista para scroll infinito suave
-                const produtosDuplicados = [...produtos, ...produtos];
-                
-                // Renderizar produtos duplicados
-                produtosDuplicados.forEach(produto => {
-                    produtosLista.innerHTML += criarProdutoHTML(produto);
-                });
-                
-                // Configurar scroll automático
-                configurarScrollAutomatico(produtos.length);
-                
-            } catch (error) {
-                console.error('❌ Erro ao buscar produtos:', error);
-                produtosLista.innerHTML = `
-                    <div class="empty-state" style="color: #E53935;">
-                        Erro ao carregar produtos<br>
-                        <small style="font-size: 14px; margin-top: 10px; display: block;">${error.message}</small>
-                    </div>
-                `;
-            }
+            };
+            xhr.onerror = function() {
+                produtosLista.innerHTML = '<div class="empty-state" style="color:#E53935;">Sem conexao com o servidor</div>';
+            };
+            xhr.send();
         }
 
-        /**
-         * Configura o scroll automático infinito
-         */
-        function configurarScrollAutomatico(quantidadeProdutos) {
-            // Calcular duração do scroll baseado na quantidade de produtos
-            const scrollDuration = Math.max(SCROLL_SPEED_SECONDS, quantidadeProdutos * 3);
-            
-            // Aplicar animação CSS
-            produtosLista.style.animation = `scrollUp ${scrollDuration}s linear infinite`;
-            
-            console.log(`🔄 Scroll automático ativado: ${scrollDuration}s por ciclo`);
-        }
-
-        /**
-         * Simula produtos para teste (remover em produção)
-         */
-        function carregarProdutosTeste() {
-            const produtosTeste = [
-                { nome: 'PICANHA', preco: 89.90, unidade: 'kg' },
-                { nome: 'COSTELA', preco: 45.50, unidade: 'kg' },
-                { nome: 'FILÉ MIGNON', preco: 99.90, unidade: 'kg' },
-                { nome: 'ALCATRA', preco: 54.90, unidade: 'kg' },
-                { nome: 'FRALDINHA', preco: 49.90, unidade: 'kg' },
-                { nome: 'CONTRAFILÉ', preco: 59.90, unidade: 'kg' },
-                { nome: 'MAMINHA', preco: 44.90, unidade: 'kg' },
-            ];
-
-            // Duplicar para scroll infinito
-            const produtosDuplicados = [...produtosTeste, ...produtosTeste];
-
-            produtosLista.innerHTML = '';
-            produtosDuplicados.forEach(produto => {
-                produtosLista.innerHTML += criarProdutoHTML(produto);
-            });
-            
-            // Configurar scroll
-            configurarScrollAutomatico(produtosTeste.length);
-            
-            console.log('🧪 Produtos de teste carregados com scroll automático');
-        }
-
-        // ====== INICIALIZAÇÃO ======
-        window.addEventListener('load', () => {
-            console.log('🚀 Sistema de catálogo iniciado');
-            
-            // Tentar carregar produtos da API
+        window.onload = function() {
             atualizarProdutos();
-            
-            // Atualização periódica
             setInterval(atualizarProdutos, REFRESH_INTERVAL_MS);
-            
-            // Listener para atualizações via BroadcastChannel (comunicação entre abas)
+
             try {
-                const bc = new BroadcastChannel('precos_channel');
-                bc.addEventListener('message', (event) => {
+                var bc = new BroadcastChannel('precos_channel');
+                bc.addEventListener('message', function(event) {
                     if (event.data && event.data.type === 'preco_atualizado') {
-                        console.log('📢 Atualização recebida via BroadcastChannel');
                         atualizarProdutos();
                     }
                 });
-            } catch (e) {
-                console.warn('⚠️ BroadcastChannel não disponível:', e);
-            }
+            } catch (e) {}
+        };
 
-            // DESCOMENTAR LINHA ABAIXO PARA TESTAR SEM API:
-            // carregarProdutosTeste();
-        });
-
-        // ====== ATALHOS DE TECLADO (OPCIONAL) ======
-        document.addEventListener('keydown', (e) => {
-            // F5 ou Ctrl+R: Atualizar produtos
+        document.addEventListener('keydown', function(e) {
             if (e.key === 'F5' || (e.ctrlKey && e.key === 'r')) {
                 e.preventDefault();
                 atualizarProdutos();
             }
-            
-            // F11: Toggle fullscreen
             if (e.key === 'F11') {
                 e.preventDefault();
-                if (!document.fullscreenElement) {
-                    document.documentElement.requestFullscreen();
+                var el = document.documentElement;
+                if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                    if (el.requestFullscreen) el.requestFullscreen();
+                    else if (el.webkitRequestFullscreen) el.webkitRequestFullscreen();
                 } else {
-                    document.exitFullscreen();
+                    if (document.exitFullscreen) document.exitFullscreen();
+                    else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
                 }
             }
         });
